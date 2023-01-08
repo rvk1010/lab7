@@ -1,0 +1,21 @@
+num_files = 3
+name_files = ['1.txt', '2.txt', '3.txt']
+num_lines_in_files = {}
+
+# определение количества строк в файле и создаем словарь
+for item in name_files:
+    line_count = sum(1 for line in open(item, encoding="utf8")) # подсчет количества строк
+    num_lines_in_files[item] = int(line_count)
+
+# сортировка по значению числа строк
+sorted_tuple = sorted(num_lines_in_files.items(), key=lambda x: x[1])
+
+# формирование файла
+with open('output.txt', "w") as file:
+    for item in sorted_tuple:
+        file.write(item[0] + '\n') # записать имя файла
+        file.write(str(item[1]) + '\n') # записать количество строк файла
+        with open(item[0], "r", encoding="utf8") as file2:
+            for line in file2:
+                file.write(line)
+
