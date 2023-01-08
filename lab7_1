@@ -1,0 +1,40 @@
+from pprint import pprint
+
+
+def read_cook_book(name_file):  # открывает файл с рецептом и возвращает словарь
+    cook_book = {} # словарь, который будем возвращать
+    f = open(name_file, encoding="utf-8")
+    fd = f.readlines() # счиытваем и удаляем символы перехода строки
+    fd = [line.rstrip() for line in fd]
+    for value in fd:
+        if value == '': # удаляем пустые строчки
+            fd.remove(value)
+    while fd:
+        name_cook = fd.pop(0) # получаем значение индекса словаря (название блюда)
+        num_ingr = int(fd.pop(0)) # получаем число ингрид
+        for i in range(num_ingr):
+            ingrid = fd.pop(0).split(' | ') # получаем список ингридиентов в форме ['Мед','34','шт']
+            # создаем словарь
+            if name_cook in cook_book:
+                cook_book[name_cook] += [{'ingredient_name': ingrid[0], 'quantity': ingrid[1], 'measure': ingrid[2]}]
+            else:
+                cook_book[name_cook] = [{'ingredient_name': ingrid[0], 'quantity': ingrid[1], 'measure': ingrid[2]}]
+    f.close()
+    return cook_book
+
+def get_shop_list_by_dishes(cook_book, dishes, person_count):
+    ingridients = {}  # словарь, который будем возвращать
+    for dish in dishes:  # перебираем все блюда
+        if dish in cook_book:
+            for ingridi in cook_book[dish]:
+                if ingridi['ingredient_name'] in ingridients: # если ингридиент есть, то плюсуем меру
+                    ingridients[ingridi['ingredient_name']]['quantity'] += int(ingridi['quantity'])*person_count
+                else:
+                    ingridients[ingridi['ingredient_name']] = {'measure': ingridi['measure'], 'quantity': int(ingridi['quantity'])*person_count}
+        else:
+            print('Ошибка')
+    return ingridients
+
+cook = read_cook_book('file.txt')
+pprint(cook)
+pprint(get_shop_list_by_dishes(cook, ['Запеченный картофель', 'Омлет', 'Шамахан'], 2))
